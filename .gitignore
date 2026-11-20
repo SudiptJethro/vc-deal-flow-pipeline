@@ -1,0 +1,51 @@
+# Claude Code local settings
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Node / Worker
+node_modules/
+worker/node_modules/
+worker/dist/
+.wrangler/
+worker/.wrangler/
+*.log
+
+# Data - raw scraper output (can be regenerated; keep startups.json)
+data/linkedin_raw.json
+data/twitter_raw.json
+data/producthunt_raw.json
+data/crunchbase_raw.json
+data/accelerator_raw.json
+data/trackxn_raw.json
+data/reddit_raw.json
+data/directory_raw.json
+
+# Secrets
+.env
+.env.local
+.env.*.local
+secrets.json
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

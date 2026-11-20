@@ -1,0 +1,84 @@
+name: Deal Flow Pipeline - Scrape & Upload
+
+on:
+  # Manual trigger only. To run on a schedule in your own fork, add e.g.:
+  #   schedule:
+  #     - cron: '0 0,12 * * *'
+  workflow_dispatch:
+    inputs:
+      skip_scrape:
+        description: 'Skip scraping (only re-enrich + upload existing raw data)'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  scrape:
+    name: Scrape → Enrich → Upload to Cloudflare D1
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 180   # 3-hour cap (well within GitHub's 6-hour free limit)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r scripts/requirements.txt
+
+      # Restore previous raw JSON files so we don't start cold every run
+      - name: Restore cached raw data
+        uses: actions/cache@v4
+        with:
+          path: data/
+          key: raw-data-${{ github.run_id }}
+          restore-keys: |
+            raw-data-
+
+      - name: Run pipeline (scrape → enrich → upload to D1)
+        env:
+          # Add these in: GitHub repo → Settings → Secrets → Actions
+          CF_ACCOUNT_ID:   ${{ secrets.CF_ACCOUNT_ID }}    # Cloudflare Account ID
+          CF_API_TOKEN:    ${{ secrets.CF_API_TOKEN }}      # Cloudflare API Token (D1 Edit)
+          CF_D1_DATABASE_ID: ${{ secrets.CF_D1_DATABASE_ID }} # D1 database ID from `wrangler d1 create`
+          PH_TOKEN:        ${{ secrets.PH_TOKEN || '' }}          # Product Hunt API token (optional)
+          SERPER_API_KEY:  ${{ secrets.SERPER_API_KEY || '' }}   # Serper.dev search API key (recommended)
+          # Browser Rendering: Worker URL + same PIPELINE_SECRET set on the Worker
+          WORKER_URL:      ${{ secrets.WORKER_URL || '' }}        # e.g. https://deal-flow-pipeline.<subdomain>.workers.dev
+          PIPELINE_SECRET: ${{ secrets.PIPELINE_SECRET || '' }}   # Bearer token for /api/render auth
+        run: |
+          SKIP_FLAG=""
+          if [ "${{ github.event.inputs.skip_scrape }}" = "true" ]; then
+            SKIP_FLAG="--skip-scrape"
+          fi
+
+          PH_FLAG=""
+          if [ -n "$PH_TOKEN" ]; then
+            PH_FLAG="--ph-token $PH_TOKEN"
+          fi
+
+          D1_FLAGS=""
+          if [ -n "$CF_ACCOUNT_ID" ] && [ -n "$CF_API_TOKEN" ]; then
+            D1_FLAGS="--cf-account-id $CF_ACCOUNT_ID --cf-api-token $CF_API_TOKEN"
+          fi
+
+          cd scripts && python run_all.py $SKIP_FLAG $PH_FLAG $D1_FLAGS
+
+      # Always save raw JSON so the next run can build on top
+      - name: Save raw data to cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/
+          key: raw-data-${{ github.run_id }}
+
+      # Results go to Cloudflare D1 only. They are deliberately not committed
+      # back to the repo or uploaded as public artifacts, because scraped
+      # founder records are personal data.
