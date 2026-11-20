@@ -1,0 +1,44 @@
+name = "deal-flow-pipeline"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ── Browser Rendering ──
+[browser]
+binding = "BROWSER"
+
+# ── Workers KV - search result cache + API response cache ──
+[[kv_namespaces]]
+binding = "KV"
+id = "" # Fill after: npx wrangler kv namespace create KV
+
+# ── D1 Database ──
+[[d1_databases]]
+binding = "DB"
+database_name = "deal-flow-db"
+database_id = "" # Fill after: npx wrangler d1 create deal-flow-db
+
+# ── Cron Triggers ──
+# Runs scrapers on a schedule (every 6 hours)
+[triggers]
+crons = ["0 */6 * * *"]
+
+# ── Environment Variables ──
+[vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "*"
+# PIPELINE_SECRET is set as an encrypted secret via Cloudflare dashboard
+# (Workers & Pages → deal-flow-pipeline → Settings → Variables → Add secret)
+# Set the same value as the PIPELINE_SECRET GitHub Actions secret.
+
+# ── Observability ──
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+# ── Dev settings ──
+[dev]
+port = 8787
