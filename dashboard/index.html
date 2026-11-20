@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deal Flow Pipeline | India Early-Stage Startups</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="demo-banner">Demo with synthetic data. Every founder and startup here is fictional.</div>
+  <header>
+    <div class="header-top">
+      <div class="brand">
+        <h1>Deal Flow Pipeline</h1>
+        <span class="subtitle">India Early-Stage Startups | Consumer AI / Consumer Tech / HealthTech</span>
+      </div>
+      <div class="header-actions">
+        <button id="runScraper" class="btn btn-scrape">&#9654; Run Scraper</button>
+        <button id="exportCsv" class="btn btn-secondary">Export CSV</button>
+        <button id="exportJson" class="btn btn-secondary">Export JSON</button>
+        <button id="viewShortlist" class="btn btn-shortlist">&#9733; Shortlist <span id="shortlistBadge" class="shortlist-badge hidden">0</span></button>
+        <div class="view-toggle">
+          <button id="tableView" class="btn btn-icon active" title="Table View">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="4" height="4" rx="0.5"/><rect x="6" y="1" width="9" height="4" rx="0.5"/><rect x="1" y="6" width="4" height="4" rx="0.5"/><rect x="6" y="6" width="9" height="4" rx="0.5"/><rect x="1" y="11" width="4" height="4" rx="0.5"/><rect x="6" y="11" width="9" height="4" rx="0.5"/></svg>
+          </button>
+          <button id="cardView" class="btn btn-icon" title="Card View">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="totalCount">0</div>
+        <div class="stat-label">Total Startups</div>
+      </div>
+      <div class="stat-card accent-ai">
+        <div class="stat-value" id="aiCount">0</div>
+        <div class="stat-label">Consumer AI</div>
+      </div>
+      <div class="stat-card accent-tech">
+        <div class="stat-value" id="techCount">0</div>
+        <div class="stat-label">Consumer Tech</div>
+      </div>
+      <div class="stat-card accent-health">
+        <div class="stat-value" id="healthCount">0</div>
+        <div class="stat-label">HealthTech</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="tier1Count">0</div>
+        <div class="stat-label">Tier 1</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="tier2Count">0</div>
+        <div class="stat-label">Tier 2</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="tier3Count">0</div>
+        <div class="stat-label">Tier 3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="linkedinCount">0</div>
+        <div class="stat-label">LinkedIn Found</div>
+      </div>
+      <div class="stat-card accent-new">
+        <div class="stat-value" id="newCount">0</div>
+        <div class="stat-label">New This Run</div>
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" class="search-icon"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+        <input type="text" id="searchInput" placeholder="Search founders, startups, one-liners..." />
+      </div>
+      <select id="sectorFilter">
+        <option value="">All Sectors</option>
+        <option value="Consumer AI">Consumer AI</option>
+        <option value="Consumer Tech">Consumer Tech</option>
+        <option value="HealthTech">HealthTech</option>
+      </select>
+      <select id="tierFilter">
+        <option value="">All Tiers</option>
+        <option value="1">Tier 1</option>
+        <option value="2">Tier 2</option>
+        <option value="3">Tier 3</option>
+      </select>
+      <select id="sourceFilter">
+        <option value="">All Sources</option>
+      </select>
+      <select id="yearFilter">
+        <option value="">All Years</option>
+      </select>
+      <select id="fundingFilter">
+        <option value="">All Stages</option>
+      </select>
+      <select id="cityFilter">
+        <option value="">All Cities</option>
+        <optgroup label="India">
+          <option value="Bengaluru">Bengaluru</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Delhi NCR">Delhi NCR</option>
+          <option value="Hyderabad">Hyderabad</option>
+          <option value="Chennai">Chennai</option>
+          <option value="Pune">Pune</option>
+          <option value="Ahmedabad">Ahmedabad</option>
+          <option value="Kolkata">Kolkata</option>
+          <option value="Kochi">Kochi</option>
+          <option value="Jaipur">Jaipur</option>
+          <option value="Chandigarh">Chandigarh</option>
+          <option value="Indore">Indore</option>
+        </optgroup>
+      </select>
+      <button id="newOnlyFilter" class="btn btn-new-filter">&#10024; New Only</button>
+      <button id="clearFilters" class="btn btn-ghost">Clear</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="tableContainer" class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="sortable" data-sort="founder_name">#</th>
+            <th class="sortable" data-sort="founder_name">Founder</th>
+            <th class="sortable" data-sort="startup_name">Startup</th>
+            <th class="sortable" data-sort="sector">Sector</th>
+            <th>One-Liner</th>
+            <th class="sortable" data-sort="tier">Tier</th>
+            <th class="sortable" data-sort="funding_stage">Funding</th>
+            <th class="sortable" data-sort="city">City</th>
+            <th>LinkedIn</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="cardContainer" class="card-container hidden"></div>
+  </main>
+
+  <footer>
+    <p>Deal Flow Pipeline | Demo mode: all founders and startups shown are synthetic | <a href="https://github.com/SudiptJethro/vc-deal-flow-pipeline">Source on GitHub</a> | <span id="lastUpdated"></span></p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Shortlist bottom bar -->
+  <div id="shortlistBar" class="shortlist-bar hidden">
+    <div class="shortlist-bar-left">
+      <span class="shortlist-bar-count"><span id="shortlistCount">0</span> selected</span>
+      <div id="shortlistChips" class="shortlist-chips"></div>
+    </div>
+    <div class="shortlist-bar-actions">
+      <button id="exportShortlist" class="btn btn-shortlist-export">&#11123; Export CSV</button>
+      <button id="clearShortlist" class="btn btn-ghost shortlist-clear">Clear all</button>
+    </div>
+  </div>
+
+  <!-- Shortlist drawer (full list view) -->
+  <div id="shortlistDrawer" class="shortlist-drawer hidden">
+    <div class="shortlist-drawer-header">
+      <span>Potential List (<span id="drawerCount">0</span>)</span>
+      <div style="display:flex;gap:8px">
+        <button id="drawerExport" class="btn btn-shortlist-export">&#11123; Export CSV</button>
+        <button id="drawerClose" class="btn btn-ghost">&#10005; Close</button>
+      </div>
+    </div>
+    <div id="drawerTable" class="drawer-table-wrap">
+      <table class="drawer-table">
+        <thead><tr>
+          <th>#</th><th>Founder</th><th>Startup</th><th>Sector</th>
+          <th>Tier</th><th>Funding</th><th>City</th><th>LinkedIn</th><th></th>
+        </tr></thead>
+        <tbody id="drawerBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="drawerOverlay" class="drawer-overlay hidden"></div>
+
+  <!-- data.js = static fallback, app.js tries Worker API first -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
