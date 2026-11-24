@@ -8,7 +8,7 @@ An automated sourcing pipeline for early-stage Indian startups in Consumer AI, C
 
 ## The problem
 
-Pre-seed investors in India see most companies only after they have raised or joined a well-known accelerator. The earliest signals are scattered: a "Show HN" post, a founder announcing they left Swiggy to build something, a new name on an incubator's portfolio page, a press note about a company exiting stealth. Checking those sources by hand every week does not scale.
+Pre-seed investors in India see most companies only after they have raised or joined a well-known accelerator. The earliest signals are scattered: a "Show HN" post, a founder announcing they quit their job to build something, a new name on an incubator's portfolio page, a press note about a company exiting stealth. Checking those sources by hand every week does not scale.
 
 This pipeline checks them automatically, merges the results into one deduplicated list, and puts the founders with the strongest background signals at the top.
 
@@ -36,7 +36,7 @@ This pipeline checks them automatically, merges the results into one deduplicate
 
 | Tier | Signal | Examples |
 |---|---|---|
-| 1 | Premier institution, top-company alumni, or clear traction | IIT/IIM/BITS, ex-Swiggy/Razorpay/CRED/Google, "revenue", "million users" |
+| 1 | Premier institution, top-company alumni, or clear traction | IIT/IIM/BITS, ex-Razorpay/CRED/Google, "revenue", "million users" |
 | 2 | Some funding or accelerator signal | "raised", "pre-seed", "backed by", YC/Antler/SURGE mentions |
 | 3 | Early, little public information | everything else |
 
