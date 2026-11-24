@@ -1,6 +1,6 @@
 # Deal Flow Pipeline
 
-An automated sourcing pipeline for early-stage Indian startups in Consumer AI, Consumer Tech and HealthTech. It is a free, self-hosted take on what tools like Tracxn do: search public sources for new companies and their founders, classify them, rank founders by background signals, and serve everything through a filterable dashboard.
+An automated sourcing pipeline for early-stage Indian startups in Consumer AI, Consumer Tech and HealthTech. It is a free, self-hosted alternative to paid startup databases: it searches public sources for new companies and their founders, classifies them, ranks founders by background signals, and serves everything through a filterable dashboard.
 
 **[Live demo](https://sudiptjethro.github.io/vc-deal-flow-pipeline/dashboard/)** (synthetic data)
 
@@ -23,11 +23,11 @@ This pipeline checks them automatically, merges the results into one deduplicate
  News / media              ├──► funding-stage inference   ──►  Cloudflare Worker API
  Reddit, directories       │    dedupe + exclusion list        Static dashboard
  Web search (LinkedIn,     │
-  X, Crunchbase, Tracxn)   ┘
+  X, Crunchbase)           ┘
         GitHub Actions (manual or scheduled) runs scripts/run_all.py
 ```
 
-1. **Collect.** `scripts/run_all.py` runs ten source scrapers. Hacker News and Product Hunt use their public APIs. Accelerator and VC portfolio pages are read through Jina Reader, or rendered with Cloudflare Browser Rendering (`/api/render` on the Worker) when they need JavaScript. LinkedIn, X, Crunchbase and Tracxn are **not** logged into or crawled; the pipeline only reads public search-engine results that point at them.
+1. **Collect.** `scripts/run_all.py` runs ten source scrapers. Hacker News and Product Hunt use their public APIs. Accelerator and VC portfolio pages are read through Jina Reader, or rendered with Cloudflare Browser Rendering (`/api/render` on the Worker) when they need JavaScript. LinkedIn, X, Crunchbase and other startup databases are **not** logged into or crawled; the pipeline only reads public search-engine results that point at them.
 2. **Enrich.** `scripts/enricher.py` classifies each company into a sector by keyword scoring, infers funding stage from text ("raised a pre-seed round", "bootstrapped", "Series A"), and assigns a founder tier.
 3. **Deduplicate.** Named startups are deduplicated by name; profile-only records by LinkedIn URL. Startups already in your own pipeline can be skipped through an exclusion list.
 4. **Store and serve.** Results are batch-upserted into Cloudflare D1 through its REST API. The Worker (`worker/src/index.ts`) serves them with KV caching, filtering, stats and CSV/JSON export. The dashboard reads from the Worker, or falls back to a static `data.js` file.
